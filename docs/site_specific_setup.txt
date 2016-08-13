@@ -1,0 +1,35 @@
+This document describes where to connect the necessary wires to the circuit,
+as I implemented it on a breadboard.
+
+Prerequisite: Look up the layout of wires in a breadboard so that this all
+makes sense. You'll notice that it's totally fine to ignore the exact
+letter coordinates listed below but not okay to ignore the column numbers.
+
+Also, at least one of the loose wires I left in the box will be extraneous.
+
+In the circuit I made, here's where to attach the wires from the load cell:
+
++EXCITATION goes to the positive (red) power row on the right.
+-EXCITATION goes to the negative (blue) power row on the right.
++OUTPUT goes to row 23, column I or J. (This is near the big cigar-like
+resistor labeled "MEXICO".)
+-OUTPUT goes to row 25, column I or J. (There's a green wire here.)
+
+By the pin descriptions on the data sheet for the load cell (LMC111-10), I
+wrote down which color wire connects to which pin. But if that goes missing,
+the pin descriptions can also be found on
+
+Here's where to attach the raspberry pi pins. pinout.xyz is a great source
+for Raspberry Pi pin descriptions.
+
+3v3 Power goes to the positive (red) power row on the left.
+Ground goes to the negative (blue) power row on the left.
+BCM 2 (SDA) goes to row 13 G, by the SDA pin of the ADS1015.
+BCM 3 (SCL) goes to row 12 G, by the SCL pin of the ADS1015.
+BCM 4 goes to row 2 B.
+
+
+Here's where to connect the battery, though you could probably guess:
+
+The positive end should connect to the positive (red) lane on the right.
+The negative end should connect to the negative (blue) lane on the right.

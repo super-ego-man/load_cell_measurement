@@ -1,0 +1,106 @@
+Assuming you have a working installation of Raspbian Jessie already.
+
+This is an outline of the instructions, for more advanced users.
+There's a more detailed version below.
+
+Use apt-get to install:
+
+build-essential
+python-dev
+python-setuptools
+setup-tools
+python-pip
+python-smbus
+git
+
+Use pip to install:
+
+RPi.GPIO
+
+Clone the following repositories with Git:
+
+https://github.com/Adafruit/Adafruit_Python_GPIO
+https://github.com/super-ego-man/Adafruit_ADS1x15
+https://github.com/super-ego-man/THIS-REPO
+
+For each of those, do
+python setup.py install
+
+Finally, you'll want to enable the GPIO pins. Google it.
+Just kidding. I like these instructions:
+https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here's the more detailed version of what I summarized above:
+
+Note that if, at any step, you get an error that says "permission denied",
+you can simply try again but prefix your instruction with "sudo".
+
+Here's a simple example: https://xkcd.com/149/
+
+STEP 1:
+
+First update your system. Do this by running:
+
+   sudo apt-get update
+   sudo apt-get dist-upgrade
+
+It's a good habit to run these commands every time you turn on your Pi. After
+the first time you run it, it won't take very long again.
+If the above does not work, then your Pi is probably not connected to the
+internet.
+
+Now run these commands to install everything you should need:
+
+   sudo apt-get install build-essential python-dev python-setuptools
+   sudo apt-get install setup-tools python-pip python-smbus git
+
+If, in one of the later steps, you see an error message telling you to install
+something else, you can install it in the same way.
+("sudo apt-get install SOMETHING" installs the package called "SOMETHING".)
+
+STEP 2:
+
+To install some python-specific stuff, do this:
+
+   pip install RPi.GPIO
+
+This may be installed by default. If you experience problems, you
+might consider installing RPi.GPIO by following the instructions on this
+page:
+http://openmicros.org/index.php/articles/94-ciseco-product-documentation/raspberry-pi/217-getting-started-with-raspberry-pi-gpio-and-python
+
+STEP 3:
+
+Install a few more things. To prepare for this part, I recommend making
+a dedicated folder for the items that you'll install next. Do this:
+
+   mkdir -p ~/Repo
+
+You'll follow a certain procedure for each URL
+in this list:
+
+https://github.com/adafruit/Adafruit_Python_GPIO.git
+https://github.com/super-ego-man/Adafruit_Python_ADS1x15.git
+https://github.com/super-ego-man/THIS-REPO
+
+Here's the procedure. Replace URL with the url from the list above.
+
+   cd ~/Repo
+   git clone URL
+
+A new directory (folder) will be created. Its name will be the last part of the
+URL. I'll call that directory DIRECTORY.
+
+   cd DIRECTORY
+   python setup.py install
+
+That's all. Remember to try again with "sudo" if you see "permission denied".
+
+STEP 4:
+
+Follow the instructions here to configure I2C. (I2C is how the 'Pi talks to the
+ADS1015.)
+
+https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c

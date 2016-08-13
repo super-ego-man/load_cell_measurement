@@ -1,0 +1,34 @@
+IN THE SHORT TERM
+
+Finish the instructions
+
+Make a setup.py that does something reasonable. Ideally it conforms to
+   a standard, but I'd settle for something that works for the target
+   audience, in the short term. Golly, I hope it's not too complicated.
+
+Rename take_sample_data.py to something reasonable.
+
+Make a wrapper script that hides the complex command-line flags.
+
+Make the script wait for something more intuitive than C-d.
+
+Document the mathematical decisions underlying the circuit design. And
+   also that one resistor that you chose arbitrarily while fixing the
+   design "in the field."
+
+Add the circuit design to this repository. I mean... at all.
+
+Make unit tests. Learn how to use Mock for unit tests. All you should
+   need to mock is the ADS1015 and that one GPIO pin. (I need to learn
+   how to do this anyway.)
+
+Add an MIT license. And maybe a huge disclaimer, like "this may break
+   EVERYTHING but is not guaranteed to do so." ... I'm not an
+   electrical engineer, folks.
+
+IN THE MORE DISTANT FUTURE (i.e. probably never, but I recommend
+   taking these steps.)
+
+Make this whole program work with some kind of USB-to-I2C or
+   USB-to-GPIO device so that people don't need to use a raspberry pi
+   at all.

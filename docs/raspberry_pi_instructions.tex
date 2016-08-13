@@ -1,0 +1,200 @@
+\documentclass{article}
+\author{Oliver Kisielius}
+\title{Problem Set SPECIFY HERE}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+
+%% TODO: Compile this to a plain text file with catdvi:
+%% http://catdvi.sourceforge.net/
+%% Also, make sure to separate the parts of this document that do and don't
+%% relate to this particular piece of software.
+
+%% outline
+%% 	Tell them what the goal is
+%% 		setup raspberry pi to take measurements from load cell
+%% 		take measurements
+%% 		transfer data to USB drive
+%% 	download Raspbian Jessie Lite from
+%% 		https://www.raspberrypi.org/downloads/raspbian/
+%% 	(In a few years, the name may be "Raspbian Stretch Lite" or similar.
+%% 	Such is progress.)
+%% 	Follow instructions here to install Raspbian Jessie Lite:
+%% 		https://www.raspberrypi.org/learning/software-guide/quickstart/
+%% 		(You may not need to install the Lite version, but it may work
+%% 		better.)
+
+\def\url{\texttt}
+\newcommand{\ls}{\texttt{ls}}
+\newcommand{\cd}{\texttt{cd}}
+\begin{document}
+
+This is my guide to setting up the Raspberry Pi and collecting data. The scope of
+the guide is limited, but there are many free online resources that can cover the
+gaps. Much of the Setup part of the guide simply lists those resources.
+
+\subsection*{Preparing the microSD card}
+
+You will need to format the microSD card with an image of the Raspbian operating
+system. This should be available from the Raspberry Pi Foundation for the
+forseeable future. At the time of writing, this page has it:\\
+\url{https://www.raspberrypi.org/downloads/raspbian/}\\
+
+
+There are two choices. The only difference is that the ``Lite'' version has fewer
+features by default. While I used the Lite version when I ran the tests myself,
+you will likely prefer to have the graphical interface that comes with the regular
+version. All my instructions were written with Raspbian Lite in mind, which means
+they will work just as well if you install the full version. When you follow my
+instructions, don't use the \texttt{startx} command.
+
+%% \begin{enumerate}
+%% \item The ``Lite'' version is what I used to run the tests myself.
+%%   By default, Raspbian Lite doesn't have any graphical programs installed,
+%%   which may be irritating. Although I will provide some command line help,
+%%   some tasks may still be easier if you have graphical tools installed.
+
+%%   However, if you do choose Raspbian Lite, you can always change your mind and
+%%   install the software that you desire. (This is straightforward but is still
+%%   outside the scope of this guide.)
+%% \item The normal version might be easier. Tasks such as moving data to a USB drive
+%%   will be easier if you use the graphical mode. If you have a computer science
+%%   major working for you, they should totally use the Lite version.
+%% \end{enumerate}
+
+Set up your 'Pi with a USB keyboard and an HDMI monitor, and turn it
+on.  This is easier than it may sound. The Raspberry Pi Foundation has
+many resources on their website to help you. For example, this one is
+written for parents - but I love the diagram at the bottom:
+https://www.raspberrypi.org/learning/parents-guide/setup/
+(You won't need a USB mouse for Raspbian Lite. However, you will want
+to connect to the internet.)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{Background}
+
+As the Raspberry Pi guides will tell you, the 'Pi is just a computer.
+If you've seen
+\emph{Jurassic Park}, you may remember the scene where, in the midst of a crisis,
+the young hacker girl approaches a computer and exclaims, "It's a UNIX system!
+I \emph{know} this!" Well, the Raspberry Pi is a UNIX system.\footnote{Technically,
+  it's a UNIX-\emph{like} system. But that doesn't really matter. Also, that
+  movie scene is wildly inaccurate.}
+It isn't very complicated. The files are organized the same way as on your
+Windows computer: Everything is organized in folders (``directories''). Directories
+can contain files, such as this PDF, and they can also contain other directories.
+For example, your ``home directory'', which is named with your username,
+probably contains subdirectories like \texttt{Desktop} and \texttt{My Documents}.
+Linux also has a ``home directory'' for each user. Yours will be
+\texttt{/home/pi}.
+
+When you log in, you'll start out ``in'' your home directory.
+The gobbledygook in front of your cursor doesn't mean anything - it's just
+part of the command. It probably looks something like \texttt{pi@raspbian:~/ \$}.
+If a problem arises and you search for an answer online, they may tell you to
+enter commands like \texttt{~\$ command}. Only type in the part after the
+\texttt{\$}.
+
+The two important commands to know are \ls and \cd.
+\ls lists the contents of the current directory. It might stand for ``List Stuff''
+or ``Let's See what's going on, here''.\\
+\cd means ``change directories''. This is just like double-clicking on a folder
+in Windows Explorer.\\
+
+\subsection*{A few irritating steps}
+
+Once you turn on your Pi, there are just
+three small steps to take before you start setting up the measurement software:
+
+begin{enumerate}
+\item Connect to the internet. The easiest way to do this is to connect the pi
+  to an ethernet port. The pi should automatically connect to the internet
+  if you do this.\\
+  However, to make the connection actually work, you'll probably need to
+  register the device with the university IT department.\footnote{This
+    is not the poor Raspberry Pi's fault.}
+  The IT people in the library will need to help you with this.\\
+  They wanted me to register my Pi through the form on this webpage:\\
+  \texttt{https://bradford.tntech.edu/registration/GameRegister.jsp}\\
+  Make sure the URL starts with http\textbf{s} before you enter your password.
+  For the ``device type'', select ``other.''\\
+  They will want the MAC address of the Pi. To find this address, use the command
+  \texttt{ip addr | grep -A2 'eth0'}. You'll see a subheading like \texttt{eth0},
+  and under that subheading you will see a line beginning with \texttt{link/ether}.
+  Directly to the right of \texttt{link/ether} will be the MAC address of the Pi.
+  It will look something like \texttt{12:34:56:78:9a:bc}. Ignore the number that's
+  all \texttt{ff:ff:$\dots$:ff}.\\
+  If that sounds impossible, you can try typing in this enormous command instead:\\
+  \texttt{ip addr | grep -A2 'eth0' | grep 'link/ether' | sed 's/.*ether
+    \backslash([[:xdigit:]\backslash:]\{3,\}\backslash).*$/\backslash1/'}\\
+  Of course, if neither of those things work, google it or ask somebody for help.
+
+  %% The command I'm trying to portray here is this:
+  %% ip addr | grep -A2 'eth0' | grep 'ether' | sed 's/.*ether \([[:xdigit:]\:]\{3,\}\).*$/\1/'
+  %% TODO make sure LaTeX didn't interpret any of those characters specially.
+
+\item Change the passphrase! By default, anybody who knows your passphrase can log
+  into your 'Pi from anywhere in the world. And they certainly will. Remember that
+  hackers automate everything they do. Without any human involvement, a program
+  written by a hacker will detect your raspberry pi, attempt to login by trying all
+  6 million passwords stolen from LinkedIn users last year, and do something
+  scary like delete all your data. That's why the passphrase should be at least
+  20 letters long and \emph{surprising}, like
+  \texttt{kisielius masquerades as a competent cyber tyrannosaur} or
+  \texttt{carillon phantom croons Summer Lovin' again}.\\
+  To change your password on the 'Pi, enter the command \texttt{passwd}.
+  You might want to write the password down somewhere in the lab.\footnote{By
+    the way, make sure to backup the important data from
+    your computer as often as possible. There is a new type of virus
+    that steals all your files and tries to ransom them back to you,
+    and it's becoming more and
+    more common worldwide. More than half of the businesses in the UK
+    were affected by it last year:
+    \texttt{http://arstechnica.com/security/2016/08/more-than-half-of-uk-firms-have-been-hit-by-ransomware-report/}
+  }
+
+  For extra assurance that nobody will sign in with your password from afar,
+  you can do this to edit the file \texttt{/etc/ssh/sshd_config}:\\
+  Enter the command \texttt{sudo nano /etc/ssh/sshd_config}\\
+  This opens the relevant file in a user-friendly text editor called
+  \texttt{nano}.\\
+  Use the arrow keys to move down to the line that says\\
+  \texttt{PasswordAuthentication yes}\\
+  and change the \texttt{yes} to \texttt{no}.\\
+  Save your changes by pressing \texttt{CONTROL-o} and \texttt{ENTER}, and
+  then exit with \texttt{CONTROL-x}.
+  Now restart the 'Pi by entering \texttt{sudo reboot}.
+
+
+\item Update the pi. This is easy. Just enter the commands:\\
+  \texttt{sudo apt-get update}\\
+  \texttt{sudo apt-get dist-upgrade}\\
+
+  If this does not work, it is probably because the Pi is not connected to the
+  internet properly.
+
+\end{enumerate}
+
+\section*{Set up the test.}
+
+For this part, please follow the instructions in the other document.
+
+\section*{Move data to a USB flash drive.}
+
+Naturally, the first step is to plug the USB drive into one of the USB ports on
+the 'Pi. Then you may need to ``mount'' the USB drive, which means ``tell your
+computer to start talking to the USB drive, and make the USB drive act like a
+normal folder on your computer so that you can move files to it.''
+
+This article with the evocative name ``Raspberry Pi Mount a USB Drive Tutorial'',
+is quite nice and even has a video. You probably won't need to read the whole
+article.\\
+\url{https://pimylifeup.com/raspberry-pi-mount-usb-drive/}\\
+
+I recommend using the graphical mode to move data to the USB drive once the
+drive is mounted.
+
+\end{document}

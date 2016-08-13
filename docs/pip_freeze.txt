@@ -1,0 +1,19 @@
+# This is the output of 'pip freeze' after I ran my test. Not all of these
+# things should be necessary. In particular, RPIO and Pylint are not used.
+
+
+Adafruit-ADS1x15==1.0.1
+Adafruit-GPIO==1.0.0
+Adafruit-PureIO==0.2.0
+astroid==1.4.8
+backports.functools-lru-cache==1.2.1
+configparser==3.5.0
+isort==4.2.5
+lazy-object-proxy==1.2.2
+mccabe==0.5.2
+pylint==1.6.4
+RPi.GPIO==0.6.2
+RPIO==0.10.1
+six==1.10.0
+spidev==3.2
+wrapt==1.10.8
