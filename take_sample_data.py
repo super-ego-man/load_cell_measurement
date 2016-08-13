@@ -9,15 +9,7 @@ It's also my first attempt at writing such a control program.
 Be wary on both counts.
 """
 
-# if(self.alert_pin):
-#     RPIO.wait_for_thing TODO
-# # See http://raspi.tv/2013/how-to-use-interrupts-with-python-on-the-raspberry-pi-and-rpi-gpio
-# # It's as simple as "GPIO.wait_for_edge(pin, GPIO.FALLING)"
-
-# May want this: https://github.com/groeck/i2c-tools/tree/master/py-smbus
-# By default, Adafruit_GPIO.I2C (used by Adafruit_ADS1x15) uses Adafruit's
-# own python-pureio smbus. Which is weird. But it takes a smbus interface
-# as an optional argument, so maybe I can make it work.
+# See http://raspi.tv/2013/how-to-use-interrupts-with-python-on-the-raspberry-pi-and-rpi-gpio
 
 from __future__ import print_function
 import time
@@ -37,8 +29,9 @@ ADS1015_RATES = Adafruit_ADS1x15.ADS1x15.ADS1015_CONFIG_DR.keys()
 ADS1015_GAINS = Adafruit_ADS1x15.ADS1x15.ADS1x15_CONFIG_GAIN.keys()
 DEFAULT_ALERT_PIN = 4 # BCM 4, closest to the I2C pins.
 BATTERY_SAMPLE_SIZE = 4 # How many measurements constitute a single reading from
-# the battery.
-BATTERY_RATE = 3300 # Data rate while taking adc measurements.
+# the battery. This is more than 1 because it takes more time to switch to
+# 'battery reading mode' and back than it does to take each measurement.
+BATTERY_RATE = 3300 # Data rate while taking battery measurements.
 BATTERY_GAIN = 16
 BATTERY_CHANNEL_DEFAULT = 1
 LC_CHANNEL_DEFAULT = 0
@@ -51,7 +44,9 @@ class Sleeper(object):
     calls to get_last_result() if falling-edge detection is not being
     used.
 
-    This class is likely the worst thing in this entire module.
+    This class is likely the worst thing in this entire module. It's probably
+    just not worth having, but I haven't gotten around to testing it
+    rigorously.
     """
     def __init__(self, rate, measure, samples=1):
         """ Pass in
@@ -258,7 +253,8 @@ def main(duration=0, rate=3300, gain=16, verbose=False, **kwargs):
         # We store these functions because we will need to switch modes
         # repeatedly in order to read both the
         start_lc = lambda: lc_start_adc_function(
-            lc_channel, -1, 1, # Hi_thresh < 0 < Lo_thresh -> conversion ready mode
+            lc_channel, -1, 1,
+            # Hi_thresh < 0 < Lo_thresh --> conversion ready mode
             data_rate=rate, gain=gain, latching=False, # latching is ignored
             num_readings=1, traditional=False, active_low=True,
             wait_function=wait_function)
@@ -271,9 +267,10 @@ def main(duration=0, rate=3300, gain=16, verbose=False, **kwargs):
 
         do_cleanup = lambda: GPIO.cleanup(pin=ready_pin)
     else:
-        # We have no ALERT/RDY pin, so set up the test to use time.sleep() instead
-        # of GPIO interrupts.
-        # TODO: Refactor so that you can do differential measurements in this mode.
+        # We have no ALERT/RDY pin, so set up the test to use
+        # time.sleep() instead of GPIO interrupts.
+        # TODO: Refactor so that you can do differential measurements
+        # in this mode.
         sleeper = Sleeper(rate, lambda: (time.time(), adc.get_last_result()))
         wait_function = sleeper.sleep # sleeps roughly the right amount
         start_lc = lambda: adc.start_adc(
@@ -293,11 +290,13 @@ def main(duration=0, rate=3300, gain=16, verbose=False, **kwargs):
                 if battery_check_counter > battery_counter_limit:
                     read_battery(adc, BATTERY_SAMPLE_SIZE, start_lc=start_lc,
                                  start_battery=start_battery, file=stdout,
-                                 wait_function=wait_function, get_time=pretty_time)
+                                 wait_function=wait_function,
+                                 get_time=pretty_time)
                     battery_check_counter = 0
                 battery_check_counter += 1
                 wait_function()
-                print(LC_DATA_FORMAT.format(pretty_time(), adc.get_last_result()),
+                print(LC_DATA_FORMAT.format(pretty_time(),
+                                            adc.get_last_result()),
                       file=stdout)
             except IOError:
                 if verbose:
@@ -327,7 +326,7 @@ if __name__ == '__main__':
                         "Hz (samples per second).")
     parser.add_argument("-g", "--gain", type=int, default=16,
                         choices=ADS1015_GAINS,
-                        help="Gain of the ADS1015, in V/V (i.e. unitless)."
+                        help="Gain of the ADS1015, in V/V (i.e. unit-less)."
                         " (0 gives a gain of 2/3. Not my fault.)")
     parser.add_argument("-c", "--comparator-mode", action="store_true",
                         help="Enables comparator (ALERT/RDY pin)."
@@ -339,9 +338,10 @@ if __name__ == '__main__':
                         help="BCM pin number for the GPIO pin from which "
                         "to read comparator values. Ignored without -c.")
     parser.add_argument("-b", "--battery-check-freq", type=int, default=2,
-                        help="Frequency with which to measure the battery level."
-                        " Note that a single act of measuring involves taking {0}"
-                        " actual samples at 3300 Hz.".format(BATTERY_SAMPLE_SIZE))
+                        help="Frequency with which to measure the battery "
+                        "level. Note that a single act of measuring involves "
+                        "taking {0} actual samples at 3300 Hz.".format(
+                            BATTERY_SAMPLE_SIZE))
     parser.add_argument("-D", "--differential", action="store_true",
                         help="Enables differential measurement of load cell"
                         " voltage.")
@@ -357,7 +357,9 @@ if __name__ == '__main__':
     argv = parser.parse_args()
     main(duration=argv.duration, rate=argv.rate, gain=argv.gain,
          comparator=argv.comparator_mode, comparator_pin=argv.comparator_pin,
-         lc_channel=LC_CHANNEL_DEFAULT, battery_check_freq=argv.battery_check_freq,
-         battery_channel=BATTERY_CHANNEL_DEFAULT, differential=argv.differential,
+         lc_channel=LC_CHANNEL_DEFAULT,
+         battery_check_freq=argv.battery_check_freq,
+         battery_channel=BATTERY_CHANNEL_DEFAULT,
+         differential=argv.differential,
          diff_channel=argv.differential_channel,
          verbose=argv.verbose)

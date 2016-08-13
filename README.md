@@ -7,6 +7,17 @@ under the mentorship of Dr. Stretz, as part of a Research Experience
 for Undergraduates program sponsored by the NSF. The code is in
 Python.
 
+The overall goal of this software and circuit design was to read data
+from a certain load cell without purchasing hundreds or thousands of
+dollars of equipment in the form of an oscilloscope.  This method is
+very likely less accurate than what you can achieve with more
+expensive equipment, but the total cost was only about $100, most of
+which cost is attributable to the Raspberry Pi 3 and its
+accouterments.  If I hadn't already had a 'Pi handy when I started, I
+might have found some USB-to-GPIO device for the I2C protocol, which
+would have reduced the cost further without any further performance
+issues (that I can forsee).
+
 To run this code, you need Oliver's version of
 Adafruit_Python_ADS1x15, found at
 https://github.com/super-ego-man/Adafruit_Python_ADS1x15
