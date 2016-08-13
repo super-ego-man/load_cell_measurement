@@ -16,6 +16,9 @@ Document the mathematical decisions underlying the circuit design. And
    also that one resistor that I chose arbitrarily while fixing the
    design "in the field."
 
+Add labels to the circuit diagram, or wholly replace it with the
+   labeled version.
+
 Make unit tests. Learn how to use Mock for unit tests. All you should
    need to mock is the ADS1015 and that one GPIO pin. (I need to learn
    how to do this anyway.)
