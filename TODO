@@ -6,11 +6,16 @@ Make a setup.py that does something reasonable. Ideally it conforms to
    a standard, but I'd settle for something that works for the target
    audience, in the short term. Golly, I hope it's not too complicated.
 
-Rename take_sample_data.py to something reasonable. Also clean it up.
+Rename take_sample_data.py to something reasonable. Also clean it
+   up. Make it nice and intuitive, e.g. have it wait for something
+   more intuitive than C-d as an end condition.
 
-Make a wrapper script that hides the complex command-line flags. Make
-   it nice and intuitive, e.g. have it wait for something more
-   intuitive than C-d as an end condition.
+Recommend that users not familiar with Linux add 'set -C' to their
+   .bashrc file.
+
+Make a wrapper script that hides the complex command-line
+   flags. There's just no need for it to do anything more complicated
+   than that.
 
 Document the mathematical decisions underlying the circuit design. And
    also that one resistor that I chose arbitrarily while fixing the
